@@ -1,0 +1,50 @@
+<template>
+    <div class="container">
+        <div class="form-group">
+            <input type="text" v-model="desk" class="form-control">
+        </div>
+        <div class="alert alert-danger" role="alert" v-if="errored">
+            error loading data
+        </div>
+        <div class="d-flex justify-content-center" v-if="isLoading">
+            <div class="text-center spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>     
+            </div>
+            <h2 class="text-primary">Loading...</h2>
+        </div>
+    </div>
+</template>
+<script>
+import axios from '@/sevice/axios'
+export default {
+    name: 'Show',
+    props: [
+        'deskId'
+    ],
+    data(){
+        return {
+            desk: null,
+            errored: false,
+            isLoading: false
+        }
+    },
+    mounted(){
+        this.getDesk()
+    },
+    methods: {
+        async getDesk(){
+            this.isLoading = true
+            await axios.get('/desks/'+this.deskId).then(response => {
+                this.desk = response.data.data.name
+                this.isLoading = false
+            }).catch(error => {
+                this.errored = true
+                this.isLoading = false
+            })
+        }
+    },
+}
+</script>
+<style>
+
+</style>

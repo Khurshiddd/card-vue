@@ -6,12 +6,18 @@ const router = createRouter({
     {
       path: '/desks',
       name: 'desks',
-      component: () => import('@/components/desks/Desk.vue')
+      component: () => import('@/components/desks/Index.vue')
     },
     {
       path: '/',
       name: 'home',
       component: () => import('@/views/HomeView.vue')
+    },
+    {
+      path: '/desks/:deskId',
+      name: 'show',
+      component: () => import('@/components/desks/Show.vue'),
+      props: true
     }
   ]
 })
