@@ -2,6 +2,10 @@
     <div class="container">
         <div class="form-group">
             <input type="text" v-model="desk" class="form-control">
+            <!-- <div class="invalid-feedback">
+                please choose a name
+            </div> -->
+            <button class="btn btn-primary mt-3" @click.prevent="saveName">update</button>
         </div>
         <div class="alert alert-danger" role="alert" v-if="errored">
             error loading data
@@ -19,7 +23,7 @@ import axios from '@/sevice/axios'
 export default {
     name: 'Show',
     props: [
-        'deskId'
+    'deskId'
     ],
     data(){
         return {
@@ -41,6 +45,18 @@ export default {
                 this.errored = true
                 this.isLoading = false
             })
+        },
+        saveName(){
+            this.isLoading = true
+            axios.post('/desks/'+this.deskId, {
+                _method: 'PUT',
+                name: this.desk
+            }).then(response => {
+                alert(response.data.message);
+                this.isLoading = false
+            })// .catch(error => {
+            //     console.log(error);
+            // })
         }
     },
 }
