@@ -4,8 +4,9 @@
             <div class="col-lg-4" v-for="desk in desks">
                 <div class="card mt-3">
                     <router-link :to="{name: 'show', params: {deskId: desk.id}}" class="card-body">
-                        <h5 class="card-title">{{ desk.name }}</h5>
+                        <h5 class="card-title text-center">{{ desk.name }}</h5>
                     </router-link>
+                    <button type="button" class="btn btn-danger" @click="deleteDesk(desk.id)">Delete</button>
                 </div>
             </div>
         </div>
@@ -44,6 +45,21 @@ export default {
                 this.errored = true
                 this.isLoading = false
             })
+        },
+        deleteDesk(id){
+            if(confirm('Are you sure you want to delete')){
+                axios.post(`/desks/${id}`,{
+                    _method: 'DELETE'
+                }).then(
+                response => {
+                    alert(response.data.message)
+                },
+                ).catch(error => {
+                    console.log(error);
+                }).finally(()=>{ 
+                    this.getDesks()
+                })
+            }
         }
     },
 }

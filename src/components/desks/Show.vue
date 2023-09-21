@@ -54,6 +54,7 @@ export default {
             }).then(response => {
                 alert(response.data.message);
                 this.isLoading = false
+                this.$router.push({name: 'desks'})
             })// .catch(error => {
             //     console.log(error);
             // })
