@@ -1,5 +1,12 @@
 <template>
     <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="namein" class="label-group">Name Desk</label>
+                <input type="text" id="namein" class="form-control my-3" v-model="name">
+            </div>
+            <button type="submit" @click.prevent="addDesk" class="btn btn-primary my-3">Add Desk</button>
+        </form>
         <div class="row">
             <div class="col-lg-4" v-for="desk in desks">
                 <div class="card mt-3">
@@ -27,6 +34,7 @@ export default {
     name: 'Index',
     data(){
         return {
+            name: '',
             desks: [],
             errored: false,
             isLoading: false
@@ -56,10 +64,19 @@ export default {
                 },
                 ).catch(error => {
                     console.log(error);
+                    alert('desk don`t delete something went wrong!')
                 }).finally(()=>{ 
                     this.getDesks()
                 })
             }
+        },
+        addDesk(){
+            axios.post('/desks',{name: this.name})
+            .then(response => {
+                alert(response.data.message);
+                this.name = ''
+                this.getDesks()
+            })
         }
     },
 }
