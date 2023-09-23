@@ -4,6 +4,9 @@
             <div class="form-group">
                 <label for="namein" class="label-group">Name Desk</label>
                 <input type="text" id="namein" class="form-control my-3" v-model="name">
+                <div v-if="errorMessage" class="text-danger">
+                    {{ errorMessage }}
+                </div>
             </div>
             <button type="submit" @click.prevent="addDesk" class="btn btn-primary my-3">Add Desk</button>
         </form>
@@ -37,7 +40,8 @@ export default {
             name: '',
             desks: [],
             errored: false,
-            isLoading: false
+            isLoading: false,
+            errorMessage: null
         }
     },
     mounted(){
@@ -76,6 +80,9 @@ export default {
                 alert(response.data.message);
                 this.name = ''
                 this.getDesks()
+            })   
+            .catch (error => {
+                this.errorMessage = error.response.data.message
             })
         }
     },
