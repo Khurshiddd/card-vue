@@ -3,8 +3,8 @@
         <form>
             <div class="form-group">
                 <label for="namein" class="label-group">Name Desk</label>
-                <input type="text" id="namein" class="form-control my-3" v-model="name">
-                <div v-if="errorMessage" class="text-danger">
+                <input type="text" id="namein" class="form-control my-3" v-model="name" required>
+                <div v-if="errorMessage" class="text-danger" >
                     {{ errorMessage }}
                 </div>
             </div>
@@ -83,6 +83,11 @@ export default {
             })   
             .catch (error => {
                 this.errorMessage = error.response.data.message
+            })
+            .finally((event)=>{
+                setTimeout(() => {
+                    this.errorMessage = false
+                }, 5000);
             })
         }
     },
