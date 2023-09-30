@@ -89,8 +89,7 @@ export default {
   methods: {
     async getDesks() {
       this.isLoading = true;
-      await axios
-        .get("/desks", {
+      await axios.get("/desks", {
           params: {
             page: this.page,
           },
@@ -99,6 +98,7 @@ export default {
           this.desks = response.data.data;
           this.pageNumbers = response.data.info;
           this.isLoading = false;
+          console.log(response);
         })
         .catch((error) => {
           this.errored = true;
@@ -107,18 +107,21 @@ export default {
     },
     deleteDesk(id) {
       if (confirm("Are you sure you want to delete")) {
+        this.isLoading = true
         axios
           .post(`/desks/${id}`, {
             _method: "DELETE",
           })
           .then((response) => {
             alert(response.data.message);
+            this.isLoading = false
           })
           .catch((error) => {
             console.log(error);
             alert("desk don`t delete something went wrong!");
           })
           .finally(() => {
+            this.isLoading = false
             this.getDesks();
           });
       }
