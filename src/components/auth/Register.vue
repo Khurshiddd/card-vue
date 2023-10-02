@@ -1,7 +1,11 @@
 <template>
     <div class="row">
         <form class="col-lg-5 text-center m-auto">
-            <h3>Login</h3>
+            <h3>Register</h3>
+            <div class="form-group">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" v-model="name" class="form-control" required placeholder="John">
+            </div>
             <div class="form-group">
                 <label for="emailLabel" class="form-label">Email</label>
                 <input type="email" id="emailLabel" v-model="email" class="form-control" required placeholder="example@mail.com">
@@ -10,44 +14,45 @@
                 <label for="emailInput" class="form-label">Password</label>
                 <input type="password" id="emailInput" v-model="password" class="form-control" required placeholder="***********">
             </div>
-            <button class="btn btn-primary mt-3" :disabled="isLoading" @click.prevent="login">Login</button>
+            <button class="btn btn-primary mt-3" :disabled="isLoading" @click.prevent="register">register</button>
         </form>
     </div>
 </template>
-<script>
-import {setItem} from '@/helpers/storage'; 
+<script> 
 import axios from '@/service/axios';
 export default {
-    name: 'Login',
+    name: 'Register',
     data(){
         return {
+            name: null,
             email: null,
             password: null,
             isLoading: null
         }
     },
     methods: {
-        login(){
+        register(){
             this.isLoading = true
-            axios.post('/auth/login',{email: this.email, password: this.password})
-            .then(response => {
+            axios.post('/auth/register', {
+                name: this.name,
+                email: this.email,
+                password: this.password,
+            }).then(response => {
                 console.log(response);
-                setItem('token',response.data.access_token)
                 this.isLoading = false
-            })
-            .catch(error => {
+                this.$router.push({name: 'login'})
+            }).catch(error => { 
+                this.isLoading = false
                 console.log(error);
-                this.isLoading = false
-            })
-            .finally(()=>{
+            }).finally(()=>{
+                this.name = '',
                 this.email = '',
                 this.password = ''
-                this.$router.push({name: 'home'})
             })
         }
     }
 }
 </script>
 <style>
-
+    
 </style>

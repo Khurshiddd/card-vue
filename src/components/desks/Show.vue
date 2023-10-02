@@ -79,7 +79,7 @@
     </div>
 </template>
 <script>
-import axios from '@/sevice/axios'
+import axios from '@/service/axios'
 export default {
     name: 'Show',
     props: [
