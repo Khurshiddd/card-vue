@@ -37,15 +37,41 @@
                     </div>
                     <button type="button" class="btn btn-danger" @click="deleteDeskList(desk_list.id)">Delete</button>
                     <div>
-                        <div class="card m-3 bg-success" v-for="card in desk_list.cards">
+                        <div class="card m-3 bg-success" v-for="card in desk_list.cards" :key="card.id">
                             <div class="card-body p-2">
                                 <h5 class="card-title">{{ card.name }}</h5>
                             </div>
-                            <button type="button" class="btn btn-danger w-50 m-auto ">Delete</button>
-                        </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control" v-model="cardNames[desk_list.id]">
+                            <div class="d-flex w-75 m-auto">
+                                <button type="button" class="btn btn-primary  w-50 m-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    open
+                                </button>
+                                <button type="button" class="btn btn-danger w-50 m-auto" @click="deleteCard(card.id)">Delete</button>
                             </div>
+                        </div>
+                        <form class="form-group d-flex">
+                            <input type="text" class="form-control" v-model="cardNames[desk_list.id]" placeholder="add new card">
+                            <button type="submit" class="border-0" @click.prevent="addNewCard(desk_list.id)">
+                                <i class="fa-solid fa-square-plus" style="color: #848e9f;"></i>
+                            </button>
+                        </form>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ...
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -68,7 +94,8 @@ export default {
             desk_lists: '',
             errorMessage: false,
             desk_list_input_id: null,
-            cardNames: []
+            cardNames: [],
+            currend_Card: []
         }
     },
     mounted(){
@@ -76,6 +103,39 @@ export default {
         this.getDeskLists()
     },
     methods: {
+        deleteCard(id){
+            if(confirm('Are you sure you want to delete')){
+                this.isLoading = true;
+                axios.post('/cards/'+id,{
+                    _method: 'DELETE'
+                })
+                .then(response => {
+                    this.isLoading = false
+                    this.getDeskLists()
+                })
+                .catch(error => {
+                    this.errorMessage = error.message
+                    this.isLoading = false
+                })
+            }
+        },
+        addNewCard(desk_list_id){
+            this.isLoading = true,
+            axios.post('/cards',{
+                name: this.cardNames[desk_list_id],
+                desk_list_id
+            })
+            .then(response => {
+                this.cardNames[desk_list_id] = ''
+                this.isLoading = false
+                alert(response.data.message);
+                this.getDeskLists()
+            })
+            .catch(error => {
+                this.errorMessage = error.message
+                this.isLoading = false
+            })
+        },
         updateDeskList(id, name){
             this.isLoading = true
             axios.post('/desk-lists/'+id, {
@@ -93,9 +153,11 @@ export default {
                 }
             }).then(response => {
                 this.desk_lists = response.data.data
-                this.desk_lists.array.forEach(element => {
-                    this.cardNames[element.id] = ''
-                });
+                if (this.desk_lists.array) {   
+                    this.desk_lists.array.forEach(element => {
+                        this.cardNames[element.id] = ''
+                    });
+                }
             })
         },
         async getDesk(){

@@ -7,6 +7,12 @@
             <li class="nav-item">
                 <router-link :to="{name: 'desks'}" class="nav-link">Desk</router-link>
             </li>
+            <li class="nav-item">
+                <router-link :to="{name: 'login'}" class="nav-link">Login</router-link>
+            </li>
+            <!-- <li>
+                <router-link >Register</router-link>
+            </li> -->
         </ul>
     </div>
 </template>
