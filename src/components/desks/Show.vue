@@ -42,7 +42,7 @@
                                 <h5 class="card-title">{{ card.name }}</h5>
                             </div>
                             <div class="d-flex w-75 m-auto">
-                                <button type="button" class="btn btn-primary  w-50 m-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <button type="button" @click="getCard(card.id)" class="btn btn-primary  w-50 m-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     open
                                 </button>
                                 <button type="button" class="btn btn-danger w-50 m-auto" @click="deleteCard(card.id)">Delete</button>
@@ -58,17 +58,15 @@
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        ...
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary">Save changes</button>
-                                    </div>
+                                    <form v-if="show_card_name_input">
+                                        <div class="modal-header">
+                                            <input type="text" v-model="currend_Card.name" class="form-control">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" @click.prevent="updateCardName(currend_Card.id)" data-bs-dismiss="modal" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +93,8 @@ export default {
             errorMessage: false,
             desk_list_input_id: null,
             cardNames: [],
-            currend_Card: []
+            currend_Card: [],
+            show_card_name_input: false
         }
     },
     mounted(){
@@ -103,6 +102,31 @@ export default {
         this.getDeskLists()
     },
     methods: {
+        updateCardName(id){
+            this.isLoading = true
+            axios.post(`/cards/${id}`, {
+                _method: 'PUT',
+                name: this.currend_Card.name,
+                desk_list_id: this.currend_Card.desk_list_id
+            })
+            .then(res => {
+                this.getDeskLists()
+                this.isLoading = false
+            })
+        },
+        getCard(id){
+            axios.get(`/cards/${id}`)
+            .then(response => {
+                this.currend_Card = response.data.data
+                this.show_card_name_input = true
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                this.getDeskLists()
+            })
+        },
         deleteCard(id){
             if(confirm('Are you sure you want to delete')){
                 this.isLoading = true;
