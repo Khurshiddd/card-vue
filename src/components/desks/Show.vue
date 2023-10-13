@@ -49,7 +49,7 @@
                             </div>
                         </div>
                         <form class="form-group d-flex">
-                            <input type="text" class="form-control" v-model="cardNames[desk_list.id]" placeholder="add new card">
+                            <input type="text" class="form-control" v-model="cardNames[desk_list.id]" placeholder="add new card" required>
                             <button type="submit" class="border-0" @click.prevent="addNewCard(desk_list.id)">
                                 <i class="fa-solid fa-square-plus" style="color: #848e9f;"></i>
                             </button>
@@ -60,9 +60,20 @@
                                 <div class="modal-content">
                                     <form v-if="show_card_name_input">
                                         <div class="modal-header">
-                                            <input type="text" v-model="currend_Card.name" class="form-control">
+                                            <input type="text" v-model="currend_Card.name" class="form-control" required>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
+                                        <div class="form-check mx-3" v-for="task in currend_Card.tasks">
+                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                {{ task.name }}
+                                            </label>
+                                        </div>
+                                        <form @submit.prevent="addNewTask" class="m-2">
+                                                <div class="form-group">
+                                                    <input type="text" v-model="new_task_name" class="form-control" placeholder="enter the task name">
+                                                </div>
+                                            </form>
                                         <div class="modal-footer">
                                             <button type="button" @click.prevent="updateCardName(currend_Card.id)" data-bs-dismiss="modal" class="btn btn-primary">Save changes</button>
                                         </div>
@@ -94,7 +105,8 @@ export default {
             desk_list_input_id: null,
             cardNames: [],
             currend_Card: [],
-            show_card_name_input: false
+            show_card_name_input: false,
+            new_task_name: ''
         }
     },
     mounted(){
@@ -102,6 +114,20 @@ export default {
         this.getDeskLists()
     },
     methods: {
+        addNewTask(){
+            axios.post('/tasks',{
+                name: this.new_task_name,
+                card_id: this.currend_Card.id
+            })
+            .then(response => {
+                console.log(response);
+                this.new_task_name = ''
+                this.getCard(this.currend_Card.id)
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        },
         updateCardName(id){
             this.isLoading = true
             axios.post(`/cards/${id}`, {
@@ -117,6 +143,7 @@ export default {
         getCard(id){
             axios.get(`/cards/${id}`)
             .then(response => {
+                console.log(response.data.data);
                 this.currend_Card = response.data.data
                 this.show_card_name_input = true
             })
